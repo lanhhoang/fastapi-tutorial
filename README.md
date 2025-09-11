@@ -1,2 +1,1 @@
-# fastapi-tutorial
-FastAPI Learn
+# FastAPI Tutorial
