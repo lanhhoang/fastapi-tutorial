@@ -1,5 +1,5 @@
 from typing import Annotated, Literal
-from fastapi import FastAPI, Path, Query
+from fastapi import Body, FastAPI, Path, Query
 from pydantic import BaseModel, Field
 
 
@@ -8,6 +8,11 @@ class Item(BaseModel):
     description: str | None = None
     price: float
     tax: float | None = None
+
+
+class User(BaseModel):
+    username: str
+    full_name: str | None = None
 
 
 class FilterParams(BaseModel):
@@ -65,8 +70,15 @@ async def read_item(
 
 
 @app.put("/items/{item_id}")
-async def update_item(item_id: int, item: Item, q: str | None = None):
-    result = {"item_id": item_id, **item.model_dump()}
+async def update_item(
+    *,
+    item_id: int,
+    item: Item,
+    user: User,
+    importance: Annotated[int, Body(gt=0)],
+    q: str | None = None,
+):
+    results = {"item_id": item_id, "item": item, "user": user, "importance": importance}
     if q:
-        result.update({"q": q})
-    return result
+        results.update({"q": q})
+    return results
