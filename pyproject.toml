@@ -1,0 +1,12 @@
+[project]
+name = "fastapi-tutorial"
+version = "0.1.0"
+description = "FastAPI Tutorial"
+readme = "README.md"
+authors = [
+    { name = "Lanh Hoang", email = "lanhhoang@users.noreply.github.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi[standard]>=0.116.1",
+]
