@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Path, Query
 from pydantic import BaseModel
 
 
@@ -54,10 +54,19 @@ async def read_items(
 
 
 @app.get("/items/{item_id}")
-async def read_item(item_id: str, q: str | None = None, short: bool = False):
+async def read_item(
+    item_id: Annotated[
+        int, Path(title="The ID of the item to retrieve", ge=1, le=1000)
+    ],
+    q: Annotated[str | None, Query(alias="item-query")],
+    size: Annotated[float | None, Query(gt=0, lt=10.5)],
+    short: bool = False,
+):
     item = {"item_id": item_id}
     if q:
         item.update({"q": q})
+    if size:
+        item.update({"size": size})
     if not short:
         item.update(
             {"description": "This is an amazing item that has a long description"}
