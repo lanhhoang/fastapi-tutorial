@@ -1,6 +1,8 @@
+from datetime import datetime, time, timedelta
 from typing import Annotated, Literal
 from fastapi import Body, FastAPI, Path, Query
 from pydantic import BaseModel, Field, HttpUrl
+from uuid import UUID
 
 
 class Image(BaseModel):
@@ -105,17 +107,23 @@ async def read_item(
 
 @app.put("/items/{item_id}")
 async def update_item(
-    *,
-    item_id: int,
-    item: Item,
-    user: User,
-    importance: Annotated[int, Body(gt=0)],
-    q: str | None = None,
+    item_id: UUID,
+    start_datetime: Annotated[datetime, Body()],
+    end_datetime: Annotated[datetime, Body()],
+    process_after: Annotated[timedelta, Body()],
+    repeat_at: Annotated[time | None, Body()] = None,
 ):
-    results = {"item_id": item_id, "item": item, "user": user, "importance": importance}
-    if q:
-        results.update({"q": q})
-    return results
+    start_process = start_datetime + process_after
+    duration = end_datetime - start_process
+    return {
+        "item_id": item_id,
+        "start_datetime": start_datetime,
+        "end_datetime": end_datetime,
+        "process_after": process_after,
+        "repeat_at": repeat_at,
+        "start_process": start_process,
+        "duration": duration,
+    }
 
 
 @app.post("/images/multiple/")
